@@ -339,10 +339,16 @@ namespace ILRuntime.Reflection
 
         public override Type[] GetInterfaces()
         {
-            if (type.FirstCLRInterface != null)
-                return new Type[] { type.FirstCLRInterface.TypeForCLR };
-            else
+            if (type.Implements == null)
                 return new Type[0];
+            var interfaces = new Type[type.Implements.Length];
+            for (int i = 0, length = type.Implements.Length; i < length; i++)
+            {
+                var t = type.Implements[i];
+                if (t != null)
+                    interfaces[i] = t.ReflectionType;
+            }
+            return interfaces;
         }
 
         public override MemberInfo[] GetMembers(BindingFlags bindingAttr)
@@ -473,6 +479,17 @@ namespace ILRuntime.Reflection
                 return null;
         }
 
+        public override Type[] GetGenericArguments()
+        {
+            var args = type.GenericArguments;
+            Type[] res = new Type[args.Length];
+            for(int i = 0; i < res.Length; i++)
+            {
+                res[i] = args[i].Value.ReflectionType;
+            }
+            return res;
+        }
+
         protected override MethodInfo GetMethodImpl(string name, BindingFlags bindingAttr, Binder binder, CallingConventions callConvention, Type[] types, ParameterModifier[] modifiers)
         {
             IMethod res;
@@ -551,6 +568,11 @@ namespace ILRuntime.Reflection
         protected override bool IsPrimitiveImpl()
         {
             return false;
+        }
+
+        public override string ToString()
+        {
+            return type.FullName;
         }
         public override int GetHashCode()
         {

@@ -26,6 +26,8 @@ namespace ILRuntime.Runtime.Generated
             method = type.GetMethod("Invoke", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Invoke_0);
 
+            app.RegisterCLRCreateArrayInstance(type, s => new System.Action<System.Int32>[s]);
+
 
         }
 
